@@ -10,7 +10,7 @@ import Card from "../components/Card";
 
 export default function Home() {
   const [messages, setMessages] = useState([
-    { who: "bot", text: "Ćao! Postavi pitanje (npr. 'Ko si ti?', 'Koje tehnologije koristi aplikacija?')." }
+    { who: "bot", text: "Ćao! Postavi pitanje vezano za studentsku službu (npr. 'Gde se nalazi studentska služba?', 'Koje je radno vreme?')." }
   ]);
   const [suggestions, setSuggestions] = useState([]);
   const [input, setInput] = useState("");

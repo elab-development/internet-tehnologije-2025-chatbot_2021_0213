@@ -22,26 +22,89 @@ const count = db.prepare("SELECT COUNT(*) AS c FROM qa").get().c;
 if (count === 0) {
   const now = new Date().toISOString();
   const seedQA = [
+    
     {
-      question: "Ko si ti?",
-      answer: "Ja sam demo Chatbot. Odgovaram na predefinisana pitanja iz baze znanja.",
-      keywords: "ko si, chatbot, bot, o tebi"
-    },
-    {
-      question: "Kako da se ulogujem u admin panel?",
-      answer: "Na /admin/login unesi admin nalog (podrazumevano: admin / admin123) i dobićeš token u browseru.",
-      keywords: "admin, login, uloguj, prijava"
-    },
-    {
-      question: "Kako da dodam novo pitanje i odgovor?",
-      answer: "U admin delu idi na 'Knowledge Base' i klikni 'Add'. Unesi pitanje, odgovor i ključne reči (odvojene zarezom).",
-      keywords: "dodaj, novo pitanje, baza znanja, keywords"
-    },
-    {
-      question: "Koje tehnologije koristi aplikacija?",
-      answer: "Backend: Node.js + Express + SQLite. Frontend: Next.js (React). Komunikacija ide preko REST API-ja.",
-      keywords: "tehnologije, stack, node, express, next, react, sqlite"
-    }
+  question: "Gde se nalazi studentska služba?",
+  answer: "Studentska služba se nalazi u prizemlju stare zgrade na Fakultetu organizacionih nauka.",
+  keywords: "studentska služba, lokacija, gde se nalazi"
+},
+{
+  question: "Koje je radno vreme studentske službe?",
+  answer: "Radno vreme studentske službe je od 11:00 do 13:00 časova.",
+  keywords: "radno vreme, studentska služba, vreme"
+},
+{
+  question: "Koja je e-mail adresa studentske službe FON-a?",
+  answer: "E-mail adresa studentske službe je studentska@en.fon.bg.ac.rs.",
+  keywords: "email, e-mail, studentska služba, kontakt"
+},
+{
+  question: "Koji telefon da zovem za ispite?",
+  answer: "Za pitanja u vezi sa ispitima možete pozvati +381 11 3950 811.",
+  keywords: "ispiti, telefon, kontakt"
+},
+{
+  question: "Koji telefon da zovem za opšta studentska pitanja?",
+  answer: "Za studentska pitanja možete pozvati +381 11 3950 810 ili +381 11 3950 813.",
+  keywords: "studentska pitanja, telefon, kontakt"
+},
+{
+  question: "Koji telefon je za diplomske i završne radove?",
+  answer: "Za diplomske i završne radove zadužen je broj +381 11 3950 809.",
+  keywords: "diplomski rad, završni rad, telefon"
+},
+{
+  question: "Koji telefon je za alumni i studentsku praksu?",
+  answer: "Za alumni i studentsku praksu zadužen je broj +381 11 3950 874.",
+  keywords: "alumni, studentska praksa, telefon"
+},
+{
+  question: "Gde mogu da se informišem o diplomskom ili završnom radu?",
+  answer: "Za pitanja u vezi sa diplomskim i završnim radovima možete kontaktirati studentsku službu na +381 11 3950 809 ili putem e-maila.",
+  keywords: "diplomski rad, završni rad, informacije"
+},
+{
+  question: "Imam pitanje u vezi sa statusom studenta, kome da se obratim?",
+  answer: "Za pitanja u vezi sa statusom studenta možete pozvati +381 11 3950 810 ili +381 11 3950 813.",
+  keywords: "status studenta, kontakt, studentska služba"
+},
+{
+  question: "Gde mogu da dobijem informacije o studentskoj praksi?",
+  answer: "Zvanični sajt za studentsku praksu je http://praksa.fon.bg.ac.rs.",
+  keywords: "studentska praksa, praksa, sajt"
+},
+{
+  question: "Ne mogu da prijavim ispit, zašto?",
+  answer: "Proverite da li ste izmirili sve obaveze i da li je rok za prijavu ispita otvoren.",
+  keywords: "prijava ispita, problem, ispit"
+},
+{
+  question: "Mogu li da zamrznem godinu?",
+  answer: "Zamrzavanje godine je moguće u posebnim slučajevima uz odgovarajuću dokumentaciju.",
+  keywords: "zamrzavanje godine, status, studije"
+},
+{
+  question: "Izgubila sam indeks, šta da radim?",
+  answer: "Potrebno je da se obratite studentskoj službi radi izdavanja duplikata indeksa.",
+  keywords: "izgubljen indeks, duplikat, studentska služba"
+},
+{
+  question: "Treba mi potvrda da sam student.",
+  answer: "Potvrdu o statusu studenta možete dobiti u studentskoj službi tokom radnog vremena.",
+  keywords: "potvrda, status studenta"
+},
+{
+  question: "Treba mi potvrda za stipendiju.",
+  answer: "Potvrda za stipendiju se izdaje u studentskoj službi na zahtev studenta.",
+  keywords: "stipendija, potvrda"
+},
+{
+  question: "Mogu li da pređem sa samofinansiranja na budžet?",
+  answer: "Promena statusa zavisi od ostvarenih uslova i rang liste.",
+  keywords: "budžet, samofinansiranje, status"
+}
+
+    
   ];
 
   const stmt = db.prepare("INSERT INTO qa (question, answer, keywords, created_at, updated_at) VALUES (?,?,?,?,?)");

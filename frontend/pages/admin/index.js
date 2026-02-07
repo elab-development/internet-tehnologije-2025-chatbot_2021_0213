@@ -104,7 +104,7 @@ export default function Admin() {
         </div>
         <div style={{ marginTop: 12 }}>
           <div className="small">Ključne reči (zarezom odvojene)</div>
-          <input className="input" value={form.keywords} onChange={e=>setForm(f=>({ ...f, keywords: e.target.value }))} placeholder="npr. login, prijava, admin" />
+          <input className="input" value={form.keywords} onChange={e=>setForm(f=>({ ...f, keywords: e.target.value }))} placeholder="npr. prijava ispita,stipendija,izgubljen indeks" />
         </div>
         {error && <div style={{ marginTop: 12, color: "crimson" }}>{error}</div>}
         <div className="row" style={{ marginTop: 12 }}>

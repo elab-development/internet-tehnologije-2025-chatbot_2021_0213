@@ -47,17 +47,7 @@ export function migrate() {
     "INSERT OR IGNORE INTO roles (name) VALUES (?)"
   );
   roles.forEach(r => insertRole.run(r));
-}
-
-
-// CATEGORIES
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS categories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
-  )
-`).run();
-
+  
 const qaCols = db.prepare("PRAGMA table_info(qa)").all();
 const hasCategory = qaCols.some(c => c.name === "category_id");
 
@@ -72,6 +62,17 @@ const insertCat = db.prepare(
 );
 
 categories.forEach(c => insertCat.run(c));
+
+}
+
+
+// CATEGORIES
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+  )
+`).run();
 
 // CHAT LOGS
 db.prepare(`
