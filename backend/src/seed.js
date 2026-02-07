@@ -102,7 +102,83 @@ if (count === 0) {
   question: "Mogu li da pređem sa samofinansiranja na budžet?",
   answer: "Promena statusa zavisi od ostvarenih uslova i rang liste.",
   keywords: "budžet, samofinansiranje, status"
+},
+{
+  question: "Da li studentska služba radi tokom ispitnih rokova?",
+  answer: "Da, studentska služba radi i tokom ispitnih rokova, ali je moguće izmenjeno radno vreme.",
+  keywords: "ispitni rokovi, radno vreme, studentska služba"
+},
+{
+  question: "Da li je potrebno zakazivanje termina za dolazak u studentsku službu?",
+  answer: "Ne, zakazivanje termina nije potrebno, dolazak je u okviru radnog vremena.",
+  keywords: "zakazivanje, termin, dolazak, studentska služba"
+},
+{
+  question: "Kako mogu da dobijem potvrdu o statusu studenta?",
+  answer: "Potvrdu možete dobiti lično u studentskoj službi ili slanjem zahteva putem e-maila.",
+  keywords: "potvrda, status studenta, e-mail"
+},
+{
+  question: "Koliko se čeka izdavanje potvrde?",
+  answer: "Potvrde se najčešće izdaju istog dana ili u roku od nekoliko radnih dana.",
+  keywords: "izdavanje potvrde, rok, čekanje"
+},
+{
+  question: "Da li studentska služba izdaje potvrde za dom i stipendiju?",
+  answer: "Da, studentska služba izdaje potvrde potrebne za studentski dom, stipendije i kredite.",
+  keywords: "dom, stipendija, kredit, potvrda"
+},
+{
+  question: "Kome da se obratim ako imam problem sa e-studentom?",
+  answer: "Za probleme sa e-student sistemom obratite se studentskoj službi putem telefona ili e-maila.",
+  keywords: "e-student, problem, kontakt"
+},
+{
+  question: "Gde mogu da proverim da li sam upisan u narednu godinu studija?",
+  answer: "Status upisa možete proveriti u e-student sistemu ili u studentskoj službi.",
+  keywords: "upis, naredna godina, e-student"
+},
+{
+  question: "Kako se vrši overa semestra?",
+  answer: "Overa semestra se vrši u studentskoj službi nakon ispunjenja svih obaveza.",
+  keywords: "overa semestra, obaveze, studentska služba"
+},
+{
+  question: "Da li mogu nekog drugog da pošaljem umesto sebe u studentsku službu?",
+  answer: "U većini slučajeva može, ali je za pojedine zahteve potrebna lična prisutnost ili ovlašćenje.",
+  keywords: "ovlašćenje, dolazak, studentska služba"
+},
+{
+  question: "Šta da radim ako mi nisu evidentirane ocene?",
+  answer: "Potrebno je da se obratite predmetnom nastavniku, a zatim studentskoj službi ako problem ostane.",
+  keywords: "ocene, evidencija, problem"
+},
+{
+  question: "Kako da promenim lične podatke (ime, prezime, adresa)?",
+  answer: "Promena ličnih podataka se vrši u studentskoj službi uz odgovarajuću dokumentaciju.",
+  keywords: "lični podaci, promena, dokumentacija"
+},
+{
+  question: "Da li mogu da dobijem uverenje o položenim ispitima?",
+  answer: "Da, uverenje o položenim ispitima izdaje studentska služba na zahtev studenta.",
+  keywords: "uverenje, položeni ispiti"
+},
+{
+  question: "Kome da se obratim za ispis sa fakulteta?",
+  answer: "Za ispis sa fakulteta potrebno je obratiti se studentskoj službi lično.",
+  keywords: "ispis, fakultet, studentska služba"
+},
+{
+  question: "Da li studentska služba šalje obaveštenja studentima?",
+  answer: "Zvanična obaveštenja se objavljuju na sajtu fakulteta i e-mail adresama studenata.",
+  keywords: "obaveštenja, studenti, e-mail"
+},
+{
+  question: "Gde mogu da se informišem o rokovima upisa i obnove godine?",
+  answer: "Informacije o rokovima dostupne su na sajtu FON-a i u studentskoj službi.",
+  keywords: "rokovi, upis, obnova godine"
 }
+
 
     
   ];
