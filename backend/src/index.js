@@ -26,7 +26,7 @@ app.post("/api/auth/login", (req, res) => {
   });
 
   const parsed = schema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "Invalid payload" });
+  if (!parsed.success) return res.status(400).json({ error: "Greška pri validaciji podataka" });
 
   const { username, password } = parsed.data;
   const user = db.prepare("SELECT id, username, password_hash FROM users WHERE username=?").get(username);
@@ -48,7 +48,7 @@ app.post("/api/auth/login", (req, res) => {
 app.post("/api/chat", (req, res) => {
   const schema = z.object({ message: z.string().min(1).max(500) });
   const parsed = schema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "Invalid payload" });
+  if (!parsed.success) return res.status(400).json({ error: "Greska" });
 
   const rows = db.prepare("SELECT id, question, answer, keywords FROM qa").all();
   const result = pickBestAnswer(parsed.data.message, rows);
@@ -91,7 +91,7 @@ app.post("/api/qa", requireAuth, (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
-      error: "Invalid payload",
+      error: "Greska",
       details: parsed.error.issues
     });
   }
@@ -146,7 +146,7 @@ app.put("/api/qa/:id", requireAuth, (req, res) => {
 
   if (!parsed.success) {
     return res.status(400).json({
-      error: "Invalid payload",
+      error: "Greška pri izmeni pitanja",
       details: parsed.error.issues
     });
   }
@@ -193,7 +193,7 @@ app.post("/api/auth/register", (req, res) => {
 
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid payload" });
+    return res.status(400).json({ error: "Greska" });
   }
 
   const { username, password } = parsed.data;
