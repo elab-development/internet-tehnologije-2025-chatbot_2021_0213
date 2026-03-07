@@ -27,7 +27,7 @@ const app = express();
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000").split(",");
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost")) return cb(null, true);
     cb(new Error("Not allowed by CORS"));
   },
   credentials: true,
