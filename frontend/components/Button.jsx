@@ -1,6 +1,7 @@
 export default function Button({ children, variant = "primary", ...props }) {
-  const className =
-    variant === "secondary" ? "btn secondary" : "btn";
+  let className = "btn";
+  if (variant === "secondary") className = "btn secondary";
+  else if (variant === "danger") className = "btn danger";
   return (
     <button className={className} {...props}>
       {children}
