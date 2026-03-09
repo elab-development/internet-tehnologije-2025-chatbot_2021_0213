@@ -6,7 +6,7 @@ import Input from "../../components/Input";
 import Card from "../../components/Card";
 import Alert from "../../components/Alert";
 
-export default function AdminLogin() {
+export default function UserLogin() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +36,8 @@ export default function AdminLogin() {
   return (
     <div className="auth-container">
       <Card>
-        <h1 className="auth-title">Admin prijava</h1>
-        <p className="auth-sub">Samo za administratore i editore</p>
+        <h1 className="auth-title">Prijava</h1>
+        <p className="auth-sub">Prijavite se na vaš nalog</p>
 
         <Alert type="error" onClose={() => setError("")}>{error}</Alert>
 
@@ -46,7 +46,7 @@ export default function AdminLogin() {
           <Input
             value={username}
             onChange={e => setUsername(e.target.value)}
-            placeholder="admin / editor"
+            placeholder="Unesite korisničko ime"
             onKeyDown={e => { if (e.key === "Enter") login(); }}
           />
         </div>
@@ -56,12 +56,13 @@ export default function AdminLogin() {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="Lozinka"
+            placeholder="Unesite lozinku"
             onKeyDown={e => { if (e.key === "Enter") login(); }}
           />
         </div>
+
         <div className="form-footer">
-          <a href="/user/login" className="link">← Korisnička prijava</a>
+          <a href="/user/register" className="link">Nemate nalog? Registrujte se</a>
           <Button onClick={login} disabled={loading}>
             {loading ? "…" : "Prijava"}
           </Button>

@@ -1,3 +1,3 @@
-export default function Input(props) {
-  return <input className="input" {...props} />;
+export default function Input({ style, ...props }) {
+  return <input className="input" style={style} {...props} />;
 }

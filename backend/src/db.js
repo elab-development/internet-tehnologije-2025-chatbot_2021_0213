@@ -11,8 +11,8 @@ db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
 export function migrate() {
-  // ── MIGRATION TYPE 1: CREATE TABLES ──────────────────────────────────────
-
+  // ── MIGRATION 1: CREATE TABLES ────────────────────────────────────────────
+  // Kreiranje osnovnih tabela: roles, users, categories, qa, chat_logs
   db.exec(`
     CREATE TABLE IF NOT EXISTS roles (
       id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,38 +64,46 @@ export function migrate() {
   const insertCat = db.prepare("INSERT OR IGNORE INTO categories (name) VALUES (?)");
   ["Opšte", "Administracija", "Ispiti", "Studije", "Tehničko"].forEach(c => insertCat.run(c));
 
-  // ── MIGRATION TYPE 2: ADD COLUMNS (idempotent) ────────────────────────────
-
+  // ── MIGRATION 2: DODAVANJE KOLONA (ADD COLUMN) ────────────────────────────
+  // Dodajemo nove kolone u postojeće tabele (idempotentno)
   const qaCols = db.prepare("PRAGMA table_info(qa)").all().map(c => c.name);
 
   if (!qaCols.includes("view_count")) {
-    db.prepare("ALTER TABLE qa ADD COLUMN view_count INTEGER DEFAULT 0").run();
-    console.log("[migrate] Added qa.view_count");
+    db.prepare("ALTER TABLE qa ADD COLUMN view_count INTEGER NOT NULL DEFAULT 0").run();
+    console.log("[migrate] Dodata kolona qa.view_count");
   }
   if (!qaCols.includes("is_active")) {
-    db.prepare("ALTER TABLE qa ADD COLUMN is_active INTEGER DEFAULT 1").run();
-    console.log("[migrate] Added qa.is_active");
+    db.prepare("ALTER TABLE qa ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1").run();
+    console.log("[migrate] Dodata kolona qa.is_active");
   }
 
   const chatCols = db.prepare("PRAGMA table_info(chat_logs)").all().map(c => c.name);
-  if (!chatCols.includes("user_id")) {
-    db.prepare("ALTER TABLE chat_logs ADD COLUMN user_id INTEGER").run();
-    console.log("[migrate] Added chat_logs.user_id");
-  }
-  if (!chatCols.includes("matched_qa")) {
-    db.prepare("ALTER TABLE chat_logs ADD COLUMN matched_qa INTEGER").run();
-    console.log("[migrate] Added chat_logs.matched_qa");
+  if (!chatCols.includes("session_id")) {
+    db.prepare("ALTER TABLE chat_logs ADD COLUMN session_id TEXT").run();
+    console.log("[migrate] Dodata kolona chat_logs.session_id");
   }
 
-  // ── MIGRATION TYPE 3: INDEXES / ADDITIONAL CONSTRAINTS ───────────────────
+  const userCols = db.prepare("PRAGMA table_info(users)").all().map(c => c.name);
+  if (!userCols.includes("email")) {
+    db.prepare("ALTER TABLE users ADD COLUMN email TEXT").run();
+    console.log("[migrate] Dodata kolona users.email");
+  }
+  if (!userCols.includes("is_active")) {
+    db.prepare("ALTER TABLE users ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1").run();
+    console.log("[migrate] Dodata kolona users.is_active");
+  }
 
+  // ── MIGRATION 3: KREIRANJE INDEKSA (ADDITIONAL CONSTRAINTS) ──────────────
+  // Dodavanje indeksa radi bržeg pretragom i ograničenja integriteta
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_qa_category    ON qa(category_id);
     CREATE INDEX IF NOT EXISTS idx_qa_is_active   ON qa(is_active);
     CREATE INDEX IF NOT EXISTS idx_users_role     ON users(role_id);
+    CREATE INDEX IF NOT EXISTS idx_users_active   ON users(is_active);
     CREATE INDEX IF NOT EXISTS idx_chat_logs_user ON chat_logs(user_id);
     CREATE INDEX IF NOT EXISTS idx_chat_logs_date ON chat_logs(created_at);
+    CREATE INDEX IF NOT EXISTS idx_chat_logs_session ON chat_logs(session_id);
   `);
 
-  console.log("[migrate] Migration complete");
+  console.log("[migrate] Migracija završena.");
 }

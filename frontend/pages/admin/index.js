@@ -1,154 +1,220 @@
 import { useEffect, useState } from "react";
-import { apiFetch, getToken } from "../../lib/api";
 import { useRouter } from "next/router";
+import { apiFetch, getToken } from "../../lib/api";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
+import Card from "../../components/Card";
+import Alert from "../../components/Alert";
 
 export default function Admin() {
   const router = useRouter();
   const [rows, setRows] = useState([]);
-  const [form, setForm] = useState({ id: null, question: "", answer: "", keywords: "" });
+  const [categories, setCategories] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [form, setForm] = useState({ id: null, question: "", answer: "", keywords: "", category_id: "" });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("qa");
 
-  async function load() {
-    setError("");
+  useEffect(() => {
+    const token = getToken();
+    if (!token) { router.push("/login"); return; }
+    apiFetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then(me => {
+        if (me.role !== "admin") { router.push("/"); return; }
+        loadAll();
+      })
+      .catch(() => router.push("/admin/login"));
+  }, []);
+
+  async function loadAll() {
+    const token = getToken();
     try {
-      const token = getToken();
-      if (!token) return router.push("/admin/login");
-      const data = await apiFetch("/api/qa", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setRows(data);
+      const [qaData, catData, statsData] = await Promise.all([
+        apiFetch("/api/qa", { headers: { Authorization: `Bearer ${token}` } }),
+        apiFetch("/api/categories"),
+        apiFetch("/api/chat/stats", { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+      setRows(qaData);
+      setCategories(catData);
+      setStats(statsData);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setLoading(false);
     }
   }
 
-  useEffect(() => { load(); }, []);
-
   async function save() {
-    setError("");
+    if (!form.question || !form.answer) { setError("Pitanje i odgovor su obavezni."); return; }
+    setError(""); setSuccess("");
+    const token = getToken();
+    const payload = {
+      question: form.question,
+      answer: form.answer,
+      keywords: form.keywords,
+      category_id: form.category_id ? Number(form.category_id) : null
+    };
     try {
-      const token = getToken();
-      if (!token) return router.push("/admin/login");
-
-      const payload = { question: form.question, answer: form.answer, keywords: form.keywords };
       if (form.id) {
         await apiFetch(`/api/qa/${form.id}`, {
-  method: "PUT",
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-});
-
-
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        });
+        setSuccess("Pitanje uspešno izmenjeno.");
       } else {
         await apiFetch("/api/qa", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-});
-
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        });
+        setSuccess("Pitanje uspešno dodato.");
       }
-      setForm({ id: null, question: "", answer: "", keywords: "" });
-      await load();
+      setForm({ id: null, question: "", answer: "", keywords: "", category_id: "" });
+      await loadAll();
     } catch (e) {
       setError(e.message);
     }
   }
 
   async function del(id) {
-    if (!confirm("Obrisati?")) return;
-    setError("");
+    if (!confirm("Obrisati pitanje? Ova akcija je trajna.")) return;
+    setError(""); setSuccess("");
+    const token = getToken();
     try {
-      const token = getToken();
       await apiFetch(`/api/qa/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
-      await load();
+      setSuccess("Pitanje obrisano.");
+      await loadAll();
     } catch (e) {
       setError(e.message);
     }
   }
 
   function edit(r) {
-    setForm({ id: r.id, question: r.question, answer: r.answer, keywords: r.keywords || "" });
+    setForm({ id: r.id, question: r.question, answer: r.answer, keywords: r.keywords || "", category_id: r.category_id || "" });
+    setActiveTab("qa");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const filtered = rows.filter(r =>
+    !search || r.question.toLowerCase().includes(search.toLowerCase()) || (r.keywords || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) return <div className="container"><p>Učitavanje…</p></div>;
+
   return (
     <div className="container">
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1 style={{ margin: 0 }}>Admin: Knowledge Base</h1>
-        <div className="row">
-          <a className="badge" href="/">Chat</a>
-          <a className="badge" href="/admin/login">Login</a>
+      <div className="page-header">
+        <h1>Admin panel</h1>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className={`btn ${activeTab === "qa" ? "" : "secondary"}`} onClick={() => setActiveTab("qa")}>Baza znanja</button>
+          <button className={`btn ${activeTab === "stats" ? "" : "secondary"}`} onClick={() => setActiveTab("stats")}>Statistike</button>
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
-        <h2 style={{ marginTop: 0 }}>{form.id ? `Edit #${form.id}` : "Add new Q/A"}</h2>
-        <div className="row">
-          <div style={{ flex: 1 }}>
-            <div className="small">Pitanje</div>
-            <input className="input" value={form.question} onChange={e=>setForm(f=>({ ...f, question: e.target.value }))} />
-          </div>
-        </div>
-        <div style={{ marginTop: 12 }}>
-          <div className="small">Odgovor</div>
-          <textarea value={form.answer} onChange={e=>setForm(f=>({ ...f, answer: e.target.value }))} />
-        </div>
-        <div style={{ marginTop: 12 }}>
-          <div className="small">Ključne reči (zarezom odvojene)</div>
-          <input className="input" value={form.keywords} onChange={e=>setForm(f=>({ ...f, keywords: e.target.value }))} placeholder="npr. prijava ispita,stipendija,izgubljen indeks" />
-        </div>
-        {error && <div style={{ marginTop: 12, color: "crimson" }}>{error}</div>}
-        <div className="row" style={{ marginTop: 12 }}>
-          <button className="btn" onClick={save}>{form.id ? "Sačuvaj" : "Dodaj"}</button>
-          <button className="btn secondary" onClick={() => setForm({ id: null, question: "", answer: "", keywords: "" })}>
-            Reset
-          </button>
-        </div>
-      </div>
+      <Alert type="error" onClose={() => setError("")}>{error}</Alert>
+      <Alert type="success" onClose={() => setSuccess("")}>{success}</Alert>
 
-      <div className="card" style={{ marginTop: 16 }}>
-        <h2 style={{ marginTop: 0 }}>Lista (ukupno: {rows.length})</h2>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Pitanje</th>
-              <th>Ključne reči</th>
-              <th>Akcije</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(r => (
-              <tr key={r.id}>
-                <td>{r.id}</td>
-                <td>
-                  <div><strong>{r.question}</strong></div>
-                  <div className="small">{r.answer}</div>
-                </td>
-                <td className="small">{r.keywords}</td>
-                <td>
-                  <div className="row">
-                    <button className="btn secondary" onClick={() => edit(r)}>Edit</button>
-                    <button className="btn" onClick={() => del(r.id)}>Delete</button>
-                  </div>
-                </td>
-              </tr>
+      {activeTab === "stats" && stats && (
+        <div>
+          <div className="row" style={{ flexWrap: "wrap", marginBottom: 20 }}>
+            {[
+              { label: "Ukupno poruka", value: stats.total },
+              { label: "Sa odgovorom", value: stats.matched },
+              { label: "Stopa poklapanja", value: `${stats.matchRate}%` },
+              { label: "Pitanja u bazi", value: rows.length },
+            ].map(s => (
+              <Card key={s.label} style={{ flex: "1 1 180px", textAlign: "center" }}>
+                <div style={{ fontSize: 28, fontWeight: 700 }}>{s.value}</div>
+                <div className="small">{s.label}</div>
+              </Card>
             ))}
-            {rows.length === 0 && (
-              <tr><td colSpan="4" className="small">Nema unosa.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+          <Card>
+            <h2 style={{ marginTop: 0 }}>Najčešće postavljana pitanja</h2>
+            <table className="table">
+              <thead><tr><th>Pitanje</th><th>Puta pitano</th></tr></thead>
+              <tbody>
+                {stats.topQA.map((t, i) => (
+                  <tr key={i}><td>{t.question}</td><td><strong>{t.times_asked}</strong></td></tr>
+                ))}
+                {stats.topQA.length === 0 && <tr><td colSpan="2" className="small">Nema podataka.</td></tr>}
+              </tbody>
+            </table>
+          </Card>
+        </div>
+      )}
+
+      {activeTab === "qa" && (
+        <>
+          <Card style={{ marginBottom: 20 }}>
+            <h2 style={{ marginTop: 0 }}>{form.id ? `Izmena pitanja #${form.id}` : "Dodaj novo pitanje"}</h2>
+            <div className="form-group">
+              <div className="label">Pitanje *</div>
+              <Input value={form.question} onChange={e => setForm(f => ({ ...f, question: e.target.value }))} placeholder="Unesite pitanje" />
+            </div>
+            <div className="form-group">
+              <div className="label">Odgovor *</div>
+              <textarea className="input" value={form.answer} onChange={e => setForm(f => ({ ...f, answer: e.target.value }))} placeholder="Unesite odgovor" />
+            </div>
+            <div className="row">
+              <div style={{ flex: 1 }}>
+                <div className="label">Ključne reči</div>
+                <Input value={form.keywords} onChange={e => setForm(f => ({ ...f, keywords: e.target.value }))} placeholder="npr. radno vreme, ispiti" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div className="label">Kategorija</div>
+                <select className="input" value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}>
+                  <option value="">-- Izaberi --</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="row" style={{ marginTop: 16 }}>
+              <Button onClick={save}>{form.id ? "Sačuvaj izmene" : "Dodaj pitanje"}</Button>
+              <Button variant="secondary" onClick={() => setForm({ id: null, question: "", answer: "", keywords: "", category_id: "" })}>Otkaži</Button>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="row" style={{ marginBottom: 14, justifyContent: "space-between" }}>
+              <h2 style={{ margin: 0 }}>Baza pitanja ({filtered.length})</h2>
+              <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Pretraži…" style={{ maxWidth: 240 }} />
+            </div>
+            <table className="table">
+              <thead>
+                <tr><th>#</th><th>Pitanje / Odgovor</th><th>Kategorija</th><th>Ključne reči</th><th>Akcije</th></tr>
+              </thead>
+              <tbody>
+                {filtered.map(r => (
+                  <tr key={r.id}>
+                    <td className="small">{r.id}</td>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{r.question}</div>
+                      <div className="small">{r.answer.length > 80 ? r.answer.slice(0, 80) + "…" : r.answer}</div>
+                    </td>
+                    <td><span className="badge">{r.category_name || "—"}</span></td>
+                    <td className="small">{r.keywords || "—"}</td>
+                    <td>
+                      <div className="row">
+                        <Button variant="secondary" onClick={() => edit(r)}>Izmeni</Button>
+                        <Button variant="danger" onClick={() => del(r.id)}>Obriši</Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && <tr><td colSpan="5" className="small">Nema rezultata.</td></tr>}
+              </tbody>
+            </table>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
