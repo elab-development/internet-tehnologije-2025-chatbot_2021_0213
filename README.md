@@ -20,7 +20,7 @@ Web aplikacija chatbot sistema sa administrativnim panelom za upravljanje bazom 
 
 ```bash
 git clone <repo-url> && cd chatbot-app
-cp .env.example .env          # opciono – promeni lozinke
+cp .env.example .env          
 docker compose up --build
 ```
 
@@ -48,6 +48,7 @@ cp .env.local.example .env.local
 npm install
 npm run dev
 ```
+
 
 ## 🔐 Nalozi (podrazumevano)
 
@@ -116,10 +117,9 @@ Pokriva: auth (login/register/role), QA CRUD (uključujući role razlike), chat,
 |---|---|
 | `main` | Stabilna produkciona verzija |
 | `develop` | Integraciona grana |
-| `feature/auth` | JWT auth + role-based access |
-| `feature/admin-panel` | Admin CRUD panel |
-| `feature/swagger` | OpenAPI dokumentacija |
 | `feature/docker` | Dockerizacija + CI/CD |
+| `feature/swagger` | OpenAPI dokumentacija |
+| `feature/korisnici-kategorije` | Prošireni korisnički sistem i kategorije |
 
 ## 📂 Struktura
 

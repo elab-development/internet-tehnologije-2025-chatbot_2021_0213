@@ -1,12 +1,16 @@
 # Chatbot Frontend (Next.js)
 
-## Setup
+## Pokretanje pomoću Dockera 
+```bash
+docker compose up --build
+```
+- Frontend: http://localhost:3000
+- Admin panel: http://localhost:3000/admin
+- Login: http://localhost:3000/admin/login
+
+## Pokretanje lokalno (bez Dockera)
 ```bash
 cd frontend
-cp .env.local.example .env.local
 npm install
 npm run dev
 ```
-
-- Chat: http://localhost:3000
-- Admin: http://localhost:3000/admin (login: /admin/login)
