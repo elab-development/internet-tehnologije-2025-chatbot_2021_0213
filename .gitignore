@@ -1,0 +1,25 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+
+# Env
+.env
+.env.local
+
+# Database
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+backend/data/
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+
